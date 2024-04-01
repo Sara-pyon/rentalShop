@@ -1,6 +1,7 @@
 const express = require('express');
 const { Genre, validateGenre } = require('../models/genre');
 const validator = require('../middleware/validator');
+const validateObjectId = require('../middleware/validateObjectId');
 const router = express.Router();
 
 router.get('/',async(req, res) => {
@@ -14,7 +15,7 @@ router.post('/', validator(validateGenre) ,async(req,res) => {
     res.send(genre);
 });
 
-router.put('/:id', validator(validateGenre), async(req, res) => {
+router.put('/:id',[validateObjectId,validator(validateGenre)], async(req, res) => {
     const genre = await Genre.findByIdAndUpdate(req.params.id,{
         name: req.body.name
     }, {new: true});
@@ -24,7 +25,7 @@ router.put('/:id', validator(validateGenre), async(req, res) => {
     res.send(genre);
 });
 
-router.delete('/:id', async(req, res) => {
+router.delete('/:id', validateObjectId ,async(req, res) => {
     const genre = await Genre.findByIdAndDelete(req.params.id);
 
     if(!genre) return res.status(404).send('The genre with the given Id was not found');
@@ -32,7 +33,7 @@ router.delete('/:id', async(req, res) => {
     res.send(genre);
 });
 
-router.get('/:id', async(req, res) => {
+router.get('/:id', validateObjectId ,async(req, res) => {
     const genre = await Genre.findById(req.params.id);
 
     if(!genre) return res.status(404).send('The genre with the given Id was not found');
