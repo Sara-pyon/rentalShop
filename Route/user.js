@@ -12,7 +12,7 @@ router.get('/me', auth ,async(req, res) => {
 });
 
 router.post('/', validator(validateUser) ,async(req, res) => {
-
+    
     let user = await User.findOne({email: req.body.email});
     if(user) return res.status(400).send('User is already registered');
 
@@ -21,7 +21,7 @@ router.post('/', validator(validateUser) ,async(req, res) => {
         return res.status(500).send("Internal Server Error: Unable to start a database session.");
     }
     await session.startTransaction();
-    
+
     try{
         user = new User(_.pick(req.body, ['first_name', 'last_name', 'email', 'password']));
     
@@ -31,7 +31,7 @@ router.post('/', validator(validateUser) ,async(req, res) => {
         await user.save({session});
     
         const token = user.generateAuthToken();
-        res.header('x-auth-token', token).send(_.pick(user, ['first_name', 'last_name', 'email']), {session: session});
+        res.header('x-auth-token', token).send(_.pick(user, ['first_name', 'last_name', 'email']));
 
         await session.commitTransaction();
     }catch(e){
