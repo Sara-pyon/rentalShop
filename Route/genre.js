@@ -5,6 +5,7 @@ const validateObjectId = require('../middleware/validateObjectId');
 const router = express.Router();
 
 router.get('/',async(req, res) => {
+    throw new Error('Could nnot get genres');
     const genres = await Genre.find().sort('name');
     res.send(genres);
 });
